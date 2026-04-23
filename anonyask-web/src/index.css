@@ -2,6 +2,52 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Design tokens — dark (default) ─────────────────────────────────────── */
+:root {
+  --color-bg-primary:          7 8 15;
+  --color-bg-secondary:        14 17 23;
+  --color-bg-elevated:         20 24 34;
+  --color-bg-card:             26 32 48;
+  --color-accent-blue:         37 99 235;
+  --color-accent-blue-light:   59 130 246;
+  --color-accent-purple:       124 58 237;
+  --color-accent-purple-light: 168 85 247;
+  --color-accent-glow:         59 130 246;
+  --color-text-primary:        241 245 249;
+  --color-text-secondary:      203 213 225;
+  --color-text-muted:          100 116 139;
+  --color-border-subtle:       30 36 51;
+  --color-border-default:      37 45 61;
+  --color-success:             34 197 94;
+  --color-warning:             245 158 11;
+  --color-danger:              239 68 68;
+
+  /* glass effects */
+  --glass-bg:        rgba(20, 24, 34, 0.7);
+  --glass-border:    rgba(37, 45, 61, 0.6);
+  --glass-card-bg:   rgba(26, 32, 48, 0.8);
+  --glass-card-border: rgba(37, 45, 61, 0.5);
+}
+
+/* ─── Design tokens — light ──────────────────────────────────────────────── */
+html.light {
+  --color-bg-primary:     248 250 252;
+  --color-bg-secondary:   255 255 255;
+  --color-bg-elevated:    241 245 249;
+  --color-bg-card:        226 232 240;
+  --color-text-primary:   15 23 42;
+  --color-text-secondary: 51 65 85;
+  --color-text-muted:     148 163 184;
+  --color-border-subtle:  226 232 240;
+  --color-border-default: 203 213 225;
+  /* accent, success, warning, danger stay the same */
+
+  --glass-bg:          rgba(255, 255, 255, 0.75);
+  --glass-border:      rgba(203, 213, 225, 0.7);
+  --glass-card-bg:     rgba(255, 255, 255, 0.9);
+  --glass-card-border: rgba(203, 213, 225, 0.5);
+}
+
 @layer base {
   * {
     box-sizing: border-box;
@@ -40,17 +86,17 @@
 
 @layer components {
   .glass {
-    background: rgba(20, 24, 34, 0.7);
+    background: var(--glass-bg);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(37, 45, 61, 0.6);
+    border: 1px solid var(--glass-border);
   }
 
   .glass-card {
-    background: rgba(26, 32, 48, 0.8);
+    background: var(--glass-card-bg);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(37, 45, 61, 0.5);
+    border: 1px solid var(--glass-card-border);
   }
 
   .sidebar-item {
@@ -91,6 +137,17 @@
 
   .input-field {
     @apply bg-bg-elevated border border-border-default text-text-primary placeholder-text-muted rounded-xl px-4 py-3 w-full outline-none transition-all duration-200 focus:border-accent-blue/60 focus:shadow-glow-sm;
+  }
+
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="time"] {
+    color-scheme: dark;
+  }
+
+  .input-field::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
   }
 
   .badge-anonymous {
@@ -166,6 +223,23 @@
       radial-gradient(at 40% 20%, rgba(37,99,235,0.08) 0px, transparent 50%),
       radial-gradient(at 80% 0%, rgba(124,58,237,0.06) 0px, transparent 50%),
       radial-gradient(at 0% 50%, rgba(37,99,235,0.04) 0px, transparent 50%);
+  }
+
+  html.light input[type="date"],
+  html.light input[type="datetime-local"],
+  html.light input[type="time"] {
+    color-scheme: light;
+  }
+
+  html.light .input-field::-webkit-calendar-picker-indicator {
+    filter: invert(0);
+  }
+
+  html.light .bg-mesh {
+    background-image:
+      radial-gradient(at 40% 20%, rgba(37,99,235,0.06) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, rgba(124,58,237,0.04) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, rgba(37,99,235,0.03) 0px, transparent 50%);
   }
 
   .glow-border-blue {

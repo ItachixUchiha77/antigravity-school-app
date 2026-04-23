@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS school_settings (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name            VARCHAR(200) NOT NULL,
+  motto           VARCHAR(300),
+  board           VARCHAR(100) NOT NULL,
+  school_type     VARCHAR(100) NOT NULL,
+  logo_data_url   TEXT,
+  address         TEXT,
+  city            VARCHAR(100),
+  state           VARCHAR(100),
+  pin_code        VARCHAR(10),
+  phone           VARCHAR(30),
+  official_email  VARCHAR(255),
+  website         VARCHAR(255),
+  academic_year   VARCHAR(20),
+  class_from      INT,
+  class_to        INT,
+  sections        VARCHAR(50),
+  completed_at    TIMESTAMPTZ DEFAULT NOW()
+);

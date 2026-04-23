@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/index.js';
-import { DEMO_ACCOUNTS } from '../data/mockData.js';
-import { BookOpen, MessageCircle, Megaphone, Users, Shield, Eye, EyeOff } from 'lucide-react';
+import { BookOpen, MessageCircle, Megaphone, Users, Eye, EyeOff } from 'lucide-react';
 
-const ROLE_ICONS = { student: '🎓', teacher: '📚', admin: '🛡️' };
+const DEMO = [
+  { role: 'student', label: 'Student',   email: 's001@school.com', description: 'Ask questions anonymously, chat with teachers' },
+  { role: 'teacher', label: 'Teacher',   email: 't001@school.com', description: 'Answer questions, post announcements & quizzes' },
+  { role: 'admin',   label: 'Principal', email: 'admin@school.com', description: 'Manage the school, view all activity' },
+];
+
 const ROLE_COLORS = {
   student: 'border-accent-blue/40 hover:border-accent-blue bg-accent-blue/5',
   teacher: 'border-amber-500/40 hover:border-amber-400 bg-amber-500/5',
@@ -15,53 +19,48 @@ const ROLE_ACTIVE = {
   teacher: 'border-amber-400 bg-amber-500/15',
   admin:   'border-danger bg-danger/15',
 };
+const ROLE_ICONS = { student: '🎓', teacher: '📚', admin: '🛡️' };
 
 export default function LoginPage() {
   const [selectedRole, setSelectedRole] = useState(null);
-  const [email, setEmail]           = useState('');
-  const [password, setPassword]     = useState('');
-  const [showPass, setShowPass]     = useState(false);
-  const [loading, setLoading]       = useState(false);
-  const [error, setError]           = useState('');
+  const [email,        setEmail]        = useState('');
+  const [password,     setPassword]     = useState('');
+  const [showPass,     setShowPass]     = useState(false);
 
-  const login    = useAuthStore((s) => s.login);
+  const { loginWithCredentials, loading, error } = useAuthStore();
   const navigate = useNavigate();
+
+  const pickRole = (role) => {
+    const demo = DEMO.find((d) => d.role === role);
+    setSelectedRole(role);
+    setEmail(demo.email);
+    setPassword('password123');
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (!selectedRole) { setError('Please select your role to continue.'); return; }
-    setLoading(true);
-    setError('');
-
-    // Simulate network delay
-    await new Promise((res) => setTimeout(res, 800));
-
-    const account = DEMO_ACCOUNTS.find((a) => a.role === selectedRole);
-    login(account.userId);
-    navigate('/app');
-    setLoading(false);
+    if (!email.trim() || !password) return;
+    const ok = await loginWithCredentials(email.trim(), password);
+    if (ok) navigate('/app');
   };
 
   return (
     <div className="min-h-screen bg-bg-primary bg-mesh flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background decorations */}
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-accent-blue/8 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-accent-purple/8 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute top-1/2 left-0 w-64 h-64 bg-accent-blue/4 rounded-full blur-3xl pointer-events-none" />
 
       <div className="w-full max-w-md relative z-10 animate-fade-in">
-        {/* Logo & Branding */}
+        {/* Branding */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-accent-blue to-accent-purple mb-4 shadow-glow-blue animate-pulse-glow">
             <span className="text-4xl">🎭</span>
           </div>
-          <h1 className="text-4xl font-black text-gradient mb-2 tracking-tight">AnonyASK</h1>
+          <h1 className="text-4xl font-black text-gradient mb-2 tracking-tight">DoubtFix</h1>
           <p className="text-text-muted text-sm">Ask anything. Learn everything. Fear nothing.</p>
         </div>
 
-        {/* Login Card */}
         <div className="glass-card rounded-2xl p-8 shadow-card">
-
           {/* Feature pills */}
           <div className="flex flex-wrap gap-2 justify-center mb-6">
             {[
@@ -76,30 +75,29 @@ export default function LoginPage() {
           </div>
 
           <form onSubmit={handleLogin} className="space-y-5">
-            {/* Role Selector */}
+            {/* Role quick-select */}
             <div>
-              <label className="block text-text-secondary text-sm font-medium mb-3">Select your role</label>
+              <label className="block text-text-secondary text-sm font-medium mb-3">
+                Quick demo — pick a role
+              </label>
               <div className="grid grid-cols-3 gap-3">
-                {DEMO_ACCOUNTS.map((account) => (
+                {DEMO.map((d) => (
                   <button
-                    key={account.role}
+                    key={d.role}
                     type="button"
-                    id={`role-${account.role}`}
-                    onClick={() => { setSelectedRole(account.role); setError(''); }}
-                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer
-                      ${selectedRole === account.role
-                        ? ROLE_ACTIVE[account.role]
-                        : ROLE_COLORS[account.role]
-                      }`}
+                    onClick={() => pickRole(d.role)}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer ${
+                      selectedRole === d.role ? ROLE_ACTIVE[d.role] : ROLE_COLORS[d.role]
+                    }`}
                   >
-                    <span className="text-2xl">{ROLE_ICONS[account.role]}</span>
-                    <span className="text-xs font-semibold text-text-primary">{account.label}</span>
+                    <span className="text-2xl">{ROLE_ICONS[d.role]}</span>
+                    <span className="text-xs font-semibold text-text-primary">{d.label}</span>
                   </button>
                 ))}
               </div>
               {selectedRole && (
                 <p className="mt-2 text-xs text-text-muted animate-fade-in">
-                  {DEMO_ACCOUNTS.find(a => a.role === selectedRole)?.description}
+                  {DEMO.find((d) => d.role === selectedRole)?.description}
                 </p>
               )}
             </div>
@@ -107,16 +105,17 @@ export default function LoginPage() {
             {/* Email */}
             <div>
               <label htmlFor="email" className="block text-text-secondary text-sm font-medium mb-2">
-                Email / Student ID
+                Email
               </label>
               <input
                 id="email"
                 type="text"
                 className="input-field"
-                placeholder="yourname@school.edu"
+                placeholder="yourname@school.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="username"
+                required
               />
             </div>
 
@@ -134,6 +133,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="current-password"
+                  required
                 />
                 <button
                   type="button"
@@ -156,7 +156,7 @@ export default function LoginPage() {
             <button
               id="login-btn"
               type="submit"
-              disabled={loading}
+              disabled={loading || !email.trim() || !password}
               className="btn-primary w-full justify-center text-base py-3 rounded-xl"
             >
               {loading ? (
@@ -167,21 +167,19 @@ export default function LoginPage() {
               ) : (
                 <>
                   <BookOpen size={18} />
-                  Sign In to AnonyASK
+                  Sign In to DoubtFix
                 </>
               )}
             </button>
 
-            {/* Demo note */}
             <p className="text-center text-xs text-text-muted">
-              🚀 Demo mode — just pick a role and sign in. Any credentials work.
+              Pick a role above to auto-fill demo credentials, or enter your own.
             </p>
           </form>
         </div>
 
-        {/* Footer */}
         <p className="text-center text-xs text-text-muted mt-6">
-          AnonyASK © 2026 · Built for Indian Schools · Privacy First 🔒
+          DoubtFix © 2026 · Built for Indian Schools · Privacy First 🔒
         </p>
       </div>
     </div>

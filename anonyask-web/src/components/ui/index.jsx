@@ -1,7 +1,8 @@
 import React from 'react';
 
 // ─── Avatar ───────────────────────────────────────────────────────────────────
-export function Avatar({ initials, size = 'md', role, className = '' }) {
+// emoji + bgColor override the default role-gradient when both are provided.
+export function Avatar({ initials, size = 'md', role, className = '', emoji = null, bgColor = null }) {
   const sizeClasses = {
     xs: 'w-6 h-6 text-[9px]',
     sm: 'w-8 h-8 text-xs',
@@ -10,6 +11,8 @@ export function Avatar({ initials, size = 'md', role, className = '' }) {
     xl: 'w-16 h-16 text-xl',
   };
 
+  const emojiSize = { xs: 'text-xs', sm: 'text-sm', md: 'text-base', lg: 'text-xl', xl: 'text-3xl' };
+
   const roleColors = {
     student: 'from-accent-blue to-accent-blue-light',
     teacher: 'from-amber-600 to-amber-400',
@@ -17,8 +20,29 @@ export function Avatar({ initials, size = 'md', role, className = '' }) {
     anon:    'from-accent-purple to-accent-purple-light',
   };
 
-  const gradient = roleColors[role] || roleColors.student;
+  if (emoji) {
+    return (
+      <div
+        className={`${sizeClasses[size]} rounded-full flex items-center justify-center flex-shrink-0 ${emojiSize[size]} ${className}`}
+        style={{ backgroundColor: bgColor || '#3B82F6' }}
+      >
+        {emoji}
+      </div>
+    );
+  }
 
+  if (bgColor) {
+    return (
+      <div
+        className={`${sizeClasses[size]} rounded-full flex items-center justify-center font-bold text-white flex-shrink-0 ${className}`}
+        style={{ backgroundColor: bgColor }}
+      >
+        {initials}
+      </div>
+    );
+  }
+
+  const gradient = roleColors[role] || roleColors.student;
   return (
     <div
       className={`${sizeClasses[size]} rounded-full bg-gradient-to-br ${gradient} flex items-center justify-center font-bold text-white flex-shrink-0 ${className}`}

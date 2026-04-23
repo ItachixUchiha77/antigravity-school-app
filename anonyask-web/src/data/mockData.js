@@ -1,4 +1,4 @@
-// Mock data for AnonyASK
+// Mock data for DoubtFix
 
 export const CLASSES = [
   { id: 'cls-10a', name: 'Class 10A', grade: 10, section: 'A', studentCount: 34 },
@@ -18,7 +18,7 @@ export const SUBJECTS = [
 
 export const USERS = {
   // Students
-  's-001': { id: 's-001', name: 'You (Student)', role: 'student', classId: 'cls-10a', avatar: null, initials: 'YS' },
+  's-001': { id: 's-001', name: 'Rahul Kumar', role: 'student', classId: 'cls-10a', avatar: null, initials: 'RK' },
   's-002': { id: 's-002', name: 'Aisha Sharma',  role: 'student', classId: 'cls-10a', avatar: null, initials: 'AS' },
   's-003': { id: 's-003', name: 'Rohan Verma',   role: 'student', classId: 'cls-10a', avatar: null, initials: 'RV' },
   's-004': { id: 's-004', name: 'Priya Singh',   role: 'student', classId: 'cls-10a', avatar: null, initials: 'PS' },
@@ -34,7 +34,7 @@ export const USERS = {
 };
 
 export const DEMO_ACCOUNTS = [
-  { role: 'student', userId: 's-001', label: 'Student',   description: 'Ask anonymous questions, upvote, chat privately with teachers' },
+  { role: 'student', userId: 's-001', label: 'Student (Rahul)', description: 'Ask anonymous questions, upvote, chat privately with teachers' },
   { role: 'teacher', userId: 't-001', label: 'Teacher',   description: 'Answer questions, post announcements, manage channels' },
   { role: 'admin',   userId: 'a-001', label: 'Admin',     description: 'Full access — manage users, classes, school settings' },
 ];
@@ -44,6 +44,7 @@ export const QUESTIONS = [
     id: 'q-001',
     classId: 'cls-10a',
     subjectId: 'math',
+    askedBy: 's-001',
     text: "Ma'am, I still don't understand when to use sin vs cos in a right triangle. Can you explain again?",
     upvotes: 14,
     upvotedBy: ['s-002', 's-003', 's-004'],
@@ -57,6 +58,7 @@ export const QUESTIONS = [
     id: 'q-002',
     classId: 'cls-10a',
     subjectId: 'math',
+    askedBy: 's-002',
     text: "What is the difference between permutation and combination? I keep getting confused.",
     upvotes: 9,
     upvotedBy: ['s-002', 's-004'],
@@ -70,6 +72,7 @@ export const QUESTIONS = [
     id: 'q-003',
     classId: 'cls-10a',
     subjectId: 'math',
+    askedBy: 's-003',
     text: "Is the formula for area of a sector (θ/360) × πr² or (θ/2π) × πr²? I've seen both in different textbooks.",
     upvotes: 6,
     upvotedBy: ['s-003'],
@@ -83,6 +86,7 @@ export const QUESTIONS = [
     id: 'q-004',
     classId: 'cls-10a',
     subjectId: 'science',
+    askedBy: 's-002',
     text: "What exactly happens during the S phase of mitosis? Is DNA replication same as chromosome duplication?",
     upvotes: 11,
     upvotedBy: ['s-002', 's-003', 's-004'],
@@ -96,6 +100,7 @@ export const QUESTIONS = [
     id: 'q-005',
     classId: 'cls-10a',
     subjectId: 'science',
+    askedBy: 's-003',
     text: "In Ohm's law, if we increase resistance and keep voltage constant, current decreases. But how does the circuit 'know' to decrease current?",
     upvotes: 17,
     upvotedBy: ['s-002', 's-003'],
@@ -109,6 +114,7 @@ export const QUESTIONS = [
     id: 'q-006',
     classId: 'cls-10a',
     subjectId: 'english',
+    askedBy: 's-001',
     text: "In chapter 'The Hack Driver', why does the narrator feel embarrassed at the end? Is it because he was fooled or something else?",
     upvotes: 5,
     upvotedBy: [],
@@ -122,6 +128,7 @@ export const QUESTIONS = [
     id: 'q-007',
     classId: 'cls-10a',
     subjectId: 'computer',
+    askedBy: 's-004',
     text: "What is the difference between == and === in JavaScript? When should I use which?",
     upvotes: 8,
     upvotedBy: ['s-003'],
@@ -213,9 +220,111 @@ export const GROUP_MESSAGES = {
 };
 
 export const NOTIFICATIONS = [
-  { id: 'n-001', type: 'answer',       text: 'Mr. Kapoor answered your question in Mathematics',     subjectId: 'math',    createdAt: '2026-04-12T08:32:00Z', read: false },
-  { id: 'n-002', type: 'announcement', text: 'New urgent announcement: Mathematics Unit Test',        classId: 'cls-10a',   createdAt: '2026-04-11T16:01:00Z', read: false },
-  { id: 'n-003', type: 'message',      text: 'Mr. Kapoor sent you a private message',                 convId: 'conv-s001-t001', createdAt: '2026-04-11T18:20:00Z', read: true },
-  { id: 'n-004', type: 'announcement', text: 'School-wide: Annual Sports Day Registration Open',      createdAt: '2026-04-12T09:01:00Z', read: true },
-  { id: 'n-005', type: 'message',      text: 'Ms. Sharma sent you a private message',                 convId: 'conv-s001-t002', createdAt: '2026-04-10T09:01:00Z', read: true },
+  // Student (s-001) notifications
+  { id: 'n-001', userId: 's-001', type: 'answer',       text: 'Mr. Kapoor answered your question in Mathematics',   subjectId: 'math',    createdAt: '2026-04-12T08:32:00Z', read: false },
+  { id: 'n-002', userId: 's-001', type: 'announcement', text: 'New urgent announcement: Mathematics Unit Test',      classId: 'cls-10a',   createdAt: '2026-04-11T16:01:00Z', read: false },
+  { id: 'n-003', userId: 's-001', type: 'message',      text: 'Mr. Kapoor sent you a private message',               convId: 'conv-s001-t001', createdAt: '2026-04-11T18:20:00Z', read: true },
+  { id: 'n-004', userId: 's-001', type: 'announcement', text: 'School-wide: Annual Sports Day Registration Open',    createdAt: '2026-04-12T09:01:00Z', read: true },
+  { id: 'n-005', userId: 's-001', type: 'message',      text: 'Ms. Sharma sent you a private message',               convId: 'conv-s001-t002', createdAt: '2026-04-10T09:01:00Z', read: true },
+  // Teacher (t-001) notifications
+  { id: 'n-006', userId: 't-001', type: 'message',      text: 'Rahul Kumar sent you a private message',              convId: 'conv-s001-t001', createdAt: '2026-04-11T18:17:00Z', read: false },
+  { id: 'n-007', userId: 't-001', type: 'answer',       text: 'New question in Mathematics: "sin vs cos in right triangle"', subjectId: 'math', createdAt: '2026-04-11T14:20:00Z', read: false },
+  { id: 'n-008', userId: 't-001', type: 'announcement', text: 'School-wide: Annual Sports Day Registration Open',    createdAt: '2026-04-12T09:01:00Z', read: true },
+  // Teacher (t-002) notifications
+  { id: 'n-009', userId: 't-002', type: 'message',      text: 'Rahul Kumar replied to your message',                 convId: 'conv-s001-t002', createdAt: '2026-04-10T14:30:00Z', read: false },
+  { id: 'n-010', userId: 't-002', type: 'answer',       text: 'New question in Science: "What happens during S phase?"', subjectId: 'science', createdAt: '2026-04-11T12:30:00Z', read: true },
+  // Admin (a-001) notifications
+  { id: 'n-011', userId: 'a-001', type: 'announcement', text: 'Your announcement was posted school-wide',             createdAt: '2026-04-12T09:00:00Z', read: false },
+  { id: 'n-012', userId: 'a-001', type: 'announcement', text: 'Ms. Sharma posted a new announcement in Science',     classId: 'cls-10a', createdAt: '2026-04-09T14:00:00Z', read: true },
+];
+
+// ─── Polls ────────────────────────────────────────────────────────────────────
+export const POLLS = [
+  {
+    id: 'poll-001',
+    classId: 'cls-10a',
+    subjectId: 'math',
+    createdBy: 't-001',
+    question: 'Which topic do you find most challenging this semester?',
+    options: [
+      { id: 'o1', text: 'Trigonometry', votes: ['s-002', 's-003'] },
+      { id: 'o2', text: 'Statistics', votes: ['s-004'] },
+      { id: 'o3', text: 'Probability', votes: [] },
+      { id: 'o4', text: 'Coordinate Geometry', votes: ['s-001'] },
+    ],
+    createdAt: '2026-04-12T09:30:00Z',
+  },
+];
+
+// ─── Quizzes ──────────────────────────────────────────────────────────────────
+export const QUIZZES = [
+  {
+    id: 'quiz-001',
+    classId: 'cls-10a',
+    subjectId: 'math',
+    createdBy: 't-001',
+    title: 'Trigonometry Quick Check',
+    questions: [
+      { id: 'qs-1', text: 'What is sin(90°)?', options: ['0', '1', '−1', '1/√2'], correctIndex: 1 },
+      { id: 'qs-2', text: 'sin²θ + cos²θ = ?', options: ['0', '2', '1', 'tan θ'], correctIndex: 2 },
+      { id: 'qs-3', text: 'What is tan(45°)?', options: ['0', '√3', '1/√3', '1'], correctIndex: 3 },
+    ],
+    submissions: {},
+    createdAt: '2026-04-11T14:00:00Z',
+  },
+];
+
+// ─── Assignments ──────────────────────────────────────────────────────────────
+export const ASSIGNMENTS = [
+  {
+    id: 'asn-001',
+    classId: 'cls-10a',
+    subjectId: 'math',
+    createdBy: 't-001',
+    title: 'Trigonometry Problem Set — Ex 8.1 & 8.2',
+    description: 'Complete all problems from Exercise 8.1 and 8.2 (Chapter 8). Show all working steps. Draw diagrams wherever required.',
+    dueDate: '2026-04-20T23:59:00Z',
+    submissions: [],
+    createdAt: '2026-04-11T09:00:00Z',
+  },
+];
+
+// ─── Videos ───────────────────────────────────────────────────────────────────
+export const VIDEOS = [
+  {
+    id: 'vid-001',
+    classId: 'cls-10a',
+    subjectId: 'math',
+    uploadedBy: 't-001',
+    title: 'Introduction to Trigonometry — SOH-CAH-TOA',
+    description: 'Learn how to use SOH-CAH-TOA to solve right triangle problems. Includes worked examples from Chapter 8.',
+    thumbnail: '📐',
+    url: 'https://youtu.be/F21S9Wpi0y8',
+    duration: '18:32',
+    createdAt: '2026-04-10T08:00:00Z',
+  },
+  {
+    id: 'vid-002',
+    classId: 'cls-10a',
+    subjectId: 'science',
+    uploadedBy: 't-002',
+    title: 'Cell Division — Mitosis & Meiosis Explained',
+    description: 'Visual walkthrough of cell division phases with labelled diagrams and animations. Perfect for board exam revision.',
+    thumbnail: '🔬',
+    url: 'https://youtu.be/qCLmR9-YY7o',
+    duration: '22:15',
+    createdAt: '2026-04-09T10:00:00Z',
+  },
+  {
+    id: 'vid-003',
+    classId: 'cls-10a',
+    subjectId: 'english',
+    uploadedBy: 't-003',
+    title: 'The Hack Driver — Analysis & Summary',
+    description: "In-depth analysis of Sinclair Lewis's short story. Themes, character study, and exam writing tips.",
+    thumbnail: '📖',
+    url: 'https://youtu.be/SzU2kxkFqLk',
+    duration: '14:08',
+    createdAt: '2026-04-08T12:00:00Z',
+  },
 ];

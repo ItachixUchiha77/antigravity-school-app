@@ -10,7 +10,7 @@
 
 **3. For Admin**
 
-- Can see *Notifications* about the Subject Channel, Private Chat, and Announcements.
+- Can see *Notifications* about the Private Chat(With teachers only), and Announcements.
 
 
 # Rules 
@@ -25,7 +25,7 @@
 
 - Add a search feature for every section --- (Search for questions, answers, announcements, etc.)
 
-- Add a search feature for everyone: 
+- Add a search feature for everyone(visible to everyone): 
     --Search for people only.
     --Should look like instagram search bar with a search icon.
     --Should be in the top of the screen.

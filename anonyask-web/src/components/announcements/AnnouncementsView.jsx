@@ -67,20 +67,25 @@ function AnnouncementCard({ ann }) {
 
 // ─── Compose Modal ────────────────────────────────────────────────────────────
 function ComposeModal({ onClose, onSubmit, selectedClassId }) {
-  const [title,    setTitle]    = useState('');
-  const [content,  setContent]  = useState('');
-  const [priority, setPriority] = useState('general');
+  const [title,       setTitle]       = useState('');
+  const [content,     setContent]     = useState('');
+  const [priority,    setPriority]    = useState('general');
   const [classTarget, setClassTarget] = useState(selectedClassId || '');
-  const [loading,  setLoading]  = useState(false);
+  const [loading,     setLoading]     = useState(false);
+  const submittingRef = React.useRef(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!title.trim() || !content.trim()) return;
+    if (!title.trim() || !content.trim() || submittingRef.current) return;
+    submittingRef.current = true;
     setLoading(true);
-    await new Promise(r => setTimeout(r, 400));
-    onSubmit(classTarget || null, title, content, priority);
-    setLoading(false);
-    onClose();
+    try {
+      await onSubmit(classTarget || null, title.trim(), content.trim(), priority);
+      onClose();
+    } finally {
+      submittingRef.current = false;
+      setLoading(false);
+    }
   };
 
   return (
@@ -180,20 +185,22 @@ export default function AnnouncementsView() {
 
   const canPost = currentUser?.role === 'teacher' || currentUser?.role === 'admin';
 
-  const filtered = announcements.filter((ann) => {
-    if (!ann.classId) return true;                     // school-wide: show everyone
-    return ann.classId === selectedClassId;            // class-specific
-  }).sort((a, b) => {
-    if (a.pinned !== b.pinned) return b.pinned - a.pinned;
-    return new Date(b.createdAt) - new Date(a.createdAt);
-  });
+  const filtered = announcements
+    .filter((ann) => {
+      if (!ann.classId) return true;
+      return ann.classId === selectedClassId;
+    })
+    .sort((a, b) => {
+      if (a.pinned !== b.pinned) return b.pinned - a.pinned;
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
 
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="px-6 py-4 border-b border-border-subtle bg-bg-secondary flex-shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-blue to-accent-purple flex items-center justify-center text-xl">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-blue to-accent-purple flex items-center justify-center text-xl flex-shrink-0">
             📢
           </div>
           <div>
@@ -204,13 +211,13 @@ export default function AnnouncementsView() {
             <button
               id="new-announcement-btn"
               onClick={() => setComposing(true)}
-              className="btn-primary ml-auto text-sm py-2"
+              className="ml-auto btn-primary text-sm py-2"
             >
-              <Plus size={16} />
-              New
+              <Plus size={16} /> New
             </button>
           )}
         </div>
+
       </div>
 
       {/* Feed */}

@@ -2,14 +2,17 @@ import React, { useState } from 'react';
 import { useQAStore, useAuthStore, useUIStore } from '../../store/index.js';
 import { SUBJECTS, USERS } from '../../data/mockData.js';
 import { Avatar, Badge, Timestamp, EmptyState } from '../ui/index.jsx';
-import { ThumbsUp, CheckCircle, MessageSquare, Send, ChevronDown, ChevronUp, BookOpen } from 'lucide-react';
+import {
+  ThumbsUp, CheckCircle, MessageSquare, Send, ChevronDown, ChevronUp,
+  BookOpen,
+} from 'lucide-react';
 
-// ─── Single Question Card ─────────────────────────────────────────────────────
+// ─── Question Card ────────────────────────────────────────────────────────────
 function QuestionCard({ question, currentUser, onUpvote, onAnswer, onMarkAnswered }) {
-  const [expanded,      setExpanded]      = useState(question.answered);
-  const [answerMode,    setAnswerMode]    = useState(false);
-  const [answerText,    setAnswerText]    = useState('');
-  const [submitting,    setSubmitting]    = useState(false);
+  const [expanded,   setExpanded]   = useState(question.answered);
+  const [answerMode, setAnswerMode] = useState(false);
+  const [answerText, setAnswerText] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const hasUpvoted = question.upvotedBy.includes(currentUser?.id);
   const isTeacher  = currentUser?.role === 'teacher' || currentUser?.role === 'admin';
@@ -18,7 +21,7 @@ function QuestionCard({ question, currentUser, onUpvote, onAnswer, onMarkAnswere
   const handleAnswer = async () => {
     if (!answerText.trim()) return;
     setSubmitting(true);
-    await new Promise(r => setTimeout(r, 400));
+    await new Promise((r) => setTimeout(r, 400));
     onAnswer(question.id, answerText, currentUser.id);
     setAnswerText('');
     setAnswerMode(false);
@@ -27,18 +30,13 @@ function QuestionCard({ question, currentUser, onUpvote, onAnswer, onMarkAnswere
   };
 
   return (
-    <div
-      className={`glass-card rounded-2xl p-5 transition-all duration-200 hover:shadow-card-hover animate-slide-up ${
-        question.answered ? 'border-l-4 border-l-success/50' : 'border-l-4 border-l-accent-purple/50'
-      }`}
-    >
-      {/* Header */}
+    <div className={`glass-card rounded-2xl p-5 transition-all duration-200 hover:shadow-card-hover animate-slide-up ${
+      question.answered ? 'border-l-4 border-l-success/50' : 'border-l-4 border-l-accent-purple/50'
+    }`}>
       <div className="flex items-start gap-3 mb-3">
-        {/* Anonymous avatar */}
         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent-purple to-accent-purple-light flex items-center justify-center flex-shrink-0">
           <span className="text-lg">🎭</span>
         </div>
-
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap mb-1">
             <span className="badge-anonymous">🎭 Anonymous</span>
@@ -46,8 +44,6 @@ function QuestionCard({ question, currentUser, onUpvote, onAnswer, onMarkAnswere
           </div>
           <Timestamp date={question.createdAt} />
         </div>
-
-        {/* Upvote */}
         <button
           id={`upvote-${question.id}`}
           onClick={() => onUpvote(question.id, currentUser?.id)}
@@ -62,10 +58,8 @@ function QuestionCard({ question, currentUser, onUpvote, onAnswer, onMarkAnswere
         </button>
       </div>
 
-      {/* Question text */}
       <p className="text-text-primary text-sm leading-relaxed mb-4 pl-13">{question.text}</p>
 
-      {/* Answer section */}
       {question.answered && question.answer && (
         <div className="mt-3">
           <button
@@ -75,7 +69,6 @@ function QuestionCard({ question, currentUser, onUpvote, onAnswer, onMarkAnswere
             {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
             {expanded ? 'Hide answer' : 'Show answer'}
           </button>
-
           {expanded && (
             <div className="bg-success/5 border border-success/20 rounded-xl p-4 animate-fade-in">
               <div className="flex items-center gap-2 mb-3">
@@ -85,15 +78,12 @@ function QuestionCard({ question, currentUser, onUpvote, onAnswer, onMarkAnswere
                   <Timestamp date={question.answeredAt} />
                 </div>
               </div>
-              <div className="text-text-secondary text-sm leading-relaxed whitespace-pre-line">
-                {question.answer}
-              </div>
+              <div className="text-text-secondary text-sm leading-relaxed whitespace-pre-line">{question.answer}</div>
             </div>
           )}
         </div>
       )}
 
-      {/* Teacher actions */}
       {isTeacher && (
         <div className="mt-4 pt-3 border-t border-border-subtle flex items-center gap-2 flex-wrap">
           {!question.answered && (
@@ -102,8 +92,7 @@ function QuestionCard({ question, currentUser, onUpvote, onAnswer, onMarkAnswere
               onClick={() => onMarkAnswered(question.id)}
               className="btn-ghost text-success text-xs border border-success/30 hover:bg-success/10"
             >
-              <CheckCircle size={14} />
-              Mark Answered
+              <CheckCircle size={14} /> Mark Answered
             </button>
           )}
           <button
@@ -117,14 +106,13 @@ function QuestionCard({ question, currentUser, onUpvote, onAnswer, onMarkAnswere
         </div>
       )}
 
-      {/* Answer compose (teacher) */}
       {answerMode && (
         <div className="mt-4 animate-slide-up">
           <textarea
             id={`answer-input-${question.id}`}
             value={answerText}
             onChange={(e) => setAnswerText(e.target.value)}
-            placeholder="Type your answer here... You can use formatting like **bold** for emphasis."
+            placeholder="Type your answer… You can use **bold** for emphasis."
             className="input-field resize-none text-sm min-h-[120px]"
             autoFocus
           />
@@ -136,11 +124,9 @@ function QuestionCard({ question, currentUser, onUpvote, onAnswer, onMarkAnswere
               disabled={submitting || !answerText.trim()}
               className="btn-primary text-sm"
             >
-              {submitting ? (
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <><Send size={14} /> Post Answer</>
-              )}
+              {submitting
+                ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                : <><Send size={14} /> Post Answer</>}
             </button>
           </div>
         </div>
@@ -149,16 +135,16 @@ function QuestionCard({ question, currentUser, onUpvote, onAnswer, onMarkAnswere
   );
 }
 
-// ─── Question Input (Student) ─────────────────────────────────────────────────
+// ─── Ask Box (students) ───────────────────────────────────────────────────────
 function AskBox({ onSubmit }) {
-  const [text,      setText]      = useState('');
-  const [loading, setLoading]   = useState(false);
+  const [text,    setText]    = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!text.trim()) return;
+    if (loading || !text.trim()) return;
     setLoading(true);
-    await new Promise(r => setTimeout(r, 300));
+    await new Promise((r) => setTimeout(r, 300));
     onSubmit(text.trim());
     setText('');
     setLoading(false);
@@ -176,7 +162,7 @@ function AskBox({ onSubmit }) {
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) handleSubmit(e); }}
-            placeholder="Ask your question anonymously... (Press Enter to send, Shift+Enter for new line)"
+            placeholder="Ask your question anonymously… (Enter to send, Shift+Enter for new line)"
             className="input-field resize-none text-sm min-h-[60px] max-h-[120px]"
             rows={2}
           />
@@ -193,8 +179,7 @@ function AskBox({ onSubmit }) {
             >
               {loading
                 ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                : <><Send size={14} /> Ask</>
-              }
+                : <><Send size={14} /> Ask</>}
             </button>
           </div>
         </div>
@@ -205,58 +190,57 @@ function AskBox({ onSubmit }) {
 
 // ─── Main Q&A View ────────────────────────────────────────────────────────────
 export default function QAView() {
-  const currentUser       = useAuthStore((s) => s.currentUser);
+  const currentUser = useAuthStore((s) => s.currentUser);
   const { selectedClassId, selectedSubjectId } = useUIStore();
   const { questions, addQuestion, upvoteQuestion, answerQuestion, markAnswered } = useQAStore();
 
-  const subject = SUBJECTS.find((s) => s.id === selectedSubjectId);
+  const subject   = SUBJECTS.find((s) => s.id === selectedSubjectId);
+  const isTeacher = currentUser?.role === 'teacher' || currentUser?.role === 'admin';
+  const isStudent = currentUser?.role === 'student';
 
-  const filtered = questions
+  const filteredQs = questions
     .filter((q) => q.classId === selectedClassId && q.subjectId === selectedSubjectId)
     .sort((a, b) => b.upvotes - a.upvotes || new Date(b.createdAt) - new Date(a.createdAt));
 
-  const isStudent = currentUser?.role === 'student';
-
   return (
     <div className="flex flex-col h-full">
-      {/* Channel Header */}
+      {/* Header */}
       <div className="px-6 py-4 border-b border-border-subtle bg-bg-secondary flex-shrink-0">
         <div className="flex items-center gap-3">
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
             style={{ backgroundColor: `${subject?.color}20`, border: `1px solid ${subject?.color}30` }}
           >
             {subject?.emoji}
           </div>
-          <div>
+          <div className="flex-1 min-w-0">
             <h2 className="font-bold text-text-primary text-lg">{subject?.name}</h2>
             <p className="text-text-muted text-xs">
-              {filtered.length} question{filtered.length !== 1 ? 's' : ''} ·
-              <span className="ml-1 text-success">{filtered.filter(q => q.answered).length} answered</span>
+              {filteredQs.length} question{filteredQs.length !== 1 ? 's' : ''} ·
+              <span className="ml-1 text-success">{filteredQs.filter((q) => q.answered).length} answered</span>
             </p>
           </div>
-          <div className="ml-auto">
-            <Badge variant="purple">🎭 All Anonymous</Badge>
+
+          <div className="ml-1">
+            <Badge variant="purple">🎭 Anonymous</Badge>
           </div>
         </div>
+
       </div>
 
-      {/* Questions Feed */}
+      {/* Feed */}
       <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
-        {filtered.length === 0 ? (
+        {filteredQs.length === 0 ? (
           <EmptyState
             icon="🎭"
-            title="No questions yet"
-            description={isStudent
-              ? "Be the first to ask! Your question will be completely anonymous."
-              : "No questions in this channel yet. Students can ask anonymously below."}
-            action={null}
+            title="Nothing here yet"
+            description={isStudent ? 'Be the first to ask! Your question will be completely anonymous.' : 'No questions in this channel yet.'}
           />
         ) : (
-          filtered.map((q) => (
+          filteredQs.map((question) => (
             <QuestionCard
-              key={q.id}
-              question={q}
+              key={question.id}
+              question={question}
               currentUser={currentUser}
               onUpvote={upvoteQuestion}
               onAnswer={answerQuestion}
@@ -268,16 +252,14 @@ export default function QAView() {
 
       {/* Ask box — students only */}
       {isStudent && (
-        <AskBox
-          onSubmit={(text) => addQuestion(selectedClassId, selectedSubjectId, text, currentUser.id)}
-        />
+        <AskBox onSubmit={(text) => addQuestion(selectedClassId, selectedSubjectId, text, currentUser.id)} />
       )}
 
-      {/* Teacher: info bar */}
+      {/* Teacher info bar */}
       {!isStudent && (
         <div className="px-6 py-3 border-t border-border-subtle bg-bg-secondary flex-shrink-0 flex items-center gap-2 text-xs text-text-muted">
           <BookOpen size={14} />
-          You're viewing as {currentUser?.role}. Answer or mark questions above.
+          Viewing as {currentUser?.role}. Answer questions above.
         </div>
       )}
     </div>
