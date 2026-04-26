@@ -113,15 +113,48 @@ export async function mockApi(path, { method = 'GET', body, token } = {}) {
   }
 
   // ── Classes ───────────────────────────────────────────────────────────────
-  if (seg[0] === 'classes' && method === 'GET') return ok(state.classes);
+  if (seg[0] === 'classes') {
+    if (method === 'GET') return ok(state.classes);
+
+    if (seg[1] === 'bulk' && method === 'POST') {
+      const SECTIONS_MAP = {
+        'A only':           ['A'],
+        'A & B':            ['A', 'B'],
+        'A, B & C':         ['A', 'B', 'C'],
+        'A, B, C & D':      ['A', 'B', 'C', 'D'],
+        'A–E (5 sections)': ['A', 'B', 'C', 'D', 'E'],
+      };
+      const from     = Number(body?.classFrom);
+      const to       = Number(body?.classTo);
+      const classMap = body?.classMap ?? {};
+      state.classes  = [];
+      const created  = [];
+      for (let g = from; g <= to; g++) {
+        const secs = SECTIONS_MAP[classMap[g]] ?? ['A'];
+        for (const s of secs) {
+          const c = { id: uid('cls'), name: `Class ${g}${s}`, grade: g, section: s };
+          state.classes.push(c);
+          created.push(c);
+        }
+      }
+      return ok(created);
+    }
+  }
 
   // ── Subjects ──────────────────────────────────────────────────────────────
   if (seg[0] === 'subjects') {
     if (method === 'GET') return ok(state.subjects);
-    if (method === 'POST') {
+    if (method === 'POST' && !seg[1]) {
       const s = { id: uid('subj'), name: body.name, emoji: body.emoji, color: body.color };
       state.subjects.push(s);
       return ok(s);
+    }
+    if (seg[1] === 'bulk' && method === 'POST') {
+      const created = (body.subjects ?? []).map((s) => ({
+        id: uid('subj'), name: s.name, emoji: s.emoji, color: s.color,
+      }));
+      state.subjects = created;
+      return ok(created);
     }
   }
 
@@ -417,6 +450,36 @@ export async function mockApi(path, { method = 'GET', body, token } = {}) {
       state.videos.unshift(v);
       return ok(v);
     }
+  }
+
+  // ── Student bulk creation ─────────────────────────────────────────────────
+  if (seg[0] === 'users' && seg[1] === 'students' && seg[2] === 'bulk' && method === 'POST') {
+    const created = (body.students ?? []).map((s) => ({
+      id:       uid('s'),
+      name:     s.name,
+      email:    s.email,
+      phone:    s.phone ?? '',
+      role:     'student',
+      classId:  s.classId ?? null,
+      initials: s.name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase(),
+    }));
+    created.forEach((u) => state.users.push(u));
+    return ok(created);
+  }
+
+  // ── Teacher bulk creation ─────────────────────────────────────────────────
+  if (seg[0] === 'users' && seg[1] === 'teachers' && seg[2] === 'bulk' && method === 'POST') {
+    const created = (body.teachers ?? []).map((t) => ({
+      id: uid('t'),
+      name: t.name,
+      email: t.email,
+      phone: t.phone ?? '',
+      role: 'teacher',
+      classIds: t.classIds ?? [],
+      initials: t.name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase(),
+    }));
+    created.forEach((u) => state.users.push(u));
+    return ok(created);
   }
 
   // ── School settings ────────────────────────────────────────────────────────

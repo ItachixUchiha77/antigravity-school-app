@@ -34,4 +34,28 @@ router.post('/', verifyToken, requireRole('admin'), async (req, res) => {
   }
 });
 
+// POST /api/subjects/bulk — admin setup
+router.post('/bulk', verifyToken, async (req, res) => {
+  if (req.user?.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+  const { subjects } = req.body;
+  if (!Array.isArray(subjects) || subjects.length === 0)
+    return res.status(400).json({ error: 'subjects array required' });
+  const created = [];
+  try {
+    for (const s of subjects) {
+      const { rows } = await db.query(
+        `INSERT INTO subjects (name, emoji, color, created_by)
+         VALUES ($1,$2,$3,$4)
+         ON CONFLICT DO NOTHING
+         RETURNING id, name, emoji, color`,
+        [s.name.trim(), s.emoji, s.color, req.user.id]
+      );
+      if (rows[0]) created.push(rows[0]);
+    }
+    res.json(created);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default router;

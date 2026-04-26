@@ -13,6 +13,8 @@ export const useAuthStore = create((set, get) => ({
   initializing: true,   // true until restoreSession completes
   error: null,
   school: null,
+  classes: [],
+  classesConfigured: false,
 
   loginWithCredentials: async (email, password) => {
     set({ loading: true, error: null });
@@ -59,7 +61,7 @@ export const useAuthStore = create((set, get) => ({
         api('/school').catch(() => null),
       ]);
 
-      set({ school });
+      set({ school, classes });
 
       // Augment USERS lookup so components using USERS[id] see real data
       users.forEach((u) => { USERS[u.id] = u; });
@@ -102,10 +104,44 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
+  setupSubjects: async (subjects) => {
+    const created = await api('/subjects/bulk', { method: 'POST', body: { subjects } });
+    SUBJECTS.length = 0;
+    created.forEach((s) => SUBJECTS.push(s));
+    useSubjectStore.getState()._set(created);
+  },
+
+  setupTeachers: async (teachers) => {
+    if (teachers.length > 0)
+      await api('/users/teachers/bulk', { method: 'POST', body: { teachers } });
+  },
+
+  setupStudents: async (students) => {
+    if (students.length > 0)
+      await api('/users/students/bulk', { method: 'POST', body: { students } });
+    set({ classesConfigured: true });
+  },
+
+  saveSchool: async (schoolData) => {
+    const school = await api('/school', { method: 'POST', body: schoolData });
+    set({ school });
+    return school;
+  },
+
+  setupClasses: async (classFrom, classTo, classMap) => {
+    const created = await api('/classes/bulk', { method: 'POST', body: { classFrom, classTo, classMap } });
+    // Sync into the CLASSES array / lookup used by legacy components
+    CLASSES.length = 0;
+    created.forEach((c) => { CLASSES.push(c); CLASSES[c.id] = c; });
+    set({ classes: created });
+    if (created[0]) useUIStore.getState().setSelectedClass(created[0].id);
+    return created;
+  },
+
   logout: () => {
     clearToken();
     disconnectSocket();
-    set({ currentUser: null, isAuthenticated: false, error: null });
+    set({ currentUser: null, isAuthenticated: false, error: null, classes: [], classesConfigured: false });
   },
 }));
 

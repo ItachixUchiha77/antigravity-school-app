@@ -150,7 +150,8 @@ export default function Sidebar() {
   const unreadCount      = visibleNotifs.filter((n) => !n.read).length;
   const { subjects, addSubject } = useSubjectStore();
 
-  const avatars = useProfileStore((s) => s.avatars);
+  const classes  = useAuthStore((s) => s.classes);
+  const avatars  = useProfileStore((s) => s.avatars);
   const [classExpanded,   setClassExpanded]   = useState(true);
   const [mobileOpen,      setMobileOpen]      = useState(false);
   const [desktopOpen,     setDesktopOpen]     = useState(true);
@@ -159,7 +160,7 @@ export default function Sidebar() {
 
   const myAv = avatars[currentUser?.id];
 
-  const selectedClass = CLASSES[selectedClassId] || CLASSES.find((c) => c.id === selectedClassId);
+  const selectedClass = classes.find((c) => c.id === selectedClassId);
   const isAdmin = currentUser?.role === 'admin';
 
   const sidebarContent = (
@@ -197,7 +198,7 @@ export default function Sidebar() {
               onChange={(e) => setSelectedClass(e.target.value)}
               className="w-full bg-bg-elevated border border-border-default text-text-primary text-sm rounded-lg px-3 py-2 outline-none focus:border-accent-blue/60 cursor-pointer"
             >
-              {CLASSES.map((cls) => (
+              {classes.map((cls) => (
                 <option key={cls.id} value={cls.id}>{cls.name}</option>
               ))}
             </select>

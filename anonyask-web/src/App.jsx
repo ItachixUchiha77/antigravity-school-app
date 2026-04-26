@@ -3,24 +3,24 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore, useUIStore } from './store/index.js';
 import LoginPage from './pages/LoginPage.jsx';
 import AppPage from './pages/AppPage.jsx';
-import AdminSetupPage from './pages/AdminSetupPage.jsx';
+import AdminSetupFlow from './pages/AdminSetupFlow.jsx';
 
-const isSetupComplete = () => !!useAuthStore.getState().school;
+const isSetupDone = (_school, classesConfigured) => classesConfigured;
 
 function ProtectedRoute({ children }) {
-  const { isAuthenticated, currentUser } = useAuthStore();
+  const { isAuthenticated, currentUser, school, classesConfigured } = useAuthStore();
   if (!isAuthenticated) return <Navigate to="/login" replace />;
-  if (currentUser?.role === 'admin' && !isSetupComplete()) {
-    return <Navigate to="/admin-setup" replace />;
+  if (currentUser?.role === 'admin' && !isSetupDone(school, classesConfigured)) {
+    return <Navigate to="/setup" replace />;
   }
   return children;
 }
 
 function AdminSetupRoute({ children }) {
-  const { isAuthenticated, currentUser } = useAuthStore();
+  const { isAuthenticated, currentUser, school, classesConfigured } = useAuthStore();
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   if (currentUser?.role !== 'admin') return <Navigate to="/app" replace />;
-  if (isSetupComplete()) return <Navigate to="/app" replace />;
+  if (isSetupDone(school, classesConfigured)) return <Navigate to="/app" replace />;
   return children;
 }
 
@@ -58,10 +58,10 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route
-        path="/admin-setup"
+        path="/setup"
         element={
           <AdminSetupRoute>
-            <AdminSetupPage />
+            <AdminSetupFlow />
           </AdminSetupRoute>
         }
       />
